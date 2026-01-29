@@ -5,9 +5,7 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-/* ======================
-   REGISTER
-====================== */
+/* REGISTER */
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -29,22 +27,19 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "Registered successfully" });
   } catch (err) {
-    console.error("REGISTER ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* ======================
-   LOGIN
-====================== */
+/* LOGIN */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
+      return res.status(400).json({ message: "Missing credentials" });
     }
 
     const user = await User.findOne({ email });
@@ -69,10 +64,9 @@ router.post("/login", async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-      },
+      }
     });
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

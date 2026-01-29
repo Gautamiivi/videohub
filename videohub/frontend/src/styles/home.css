@@ -1,0 +1,42 @@
+.homeContainer {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.homeTitle {
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.uploadBox {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.uploadBox input[type="file"] {
+  color: white;
+}
+
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.videoCard {
+  background: #020617;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.videoCard video {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.videoCard h4 {
+  margin-top: 8px;
+  font-size: 16px;
+}

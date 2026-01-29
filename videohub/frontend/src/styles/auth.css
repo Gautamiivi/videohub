@@ -1,0 +1,10 @@
+.authTitle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.authSwitch {
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--muted);
+}

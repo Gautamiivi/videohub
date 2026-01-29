@@ -9,9 +9,7 @@ const router = express.Router();
 
 /* Needed for ES modules */
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-/* MULTER SETUP */
+const __dirname = path.dirname(__filename); */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../uploads"));

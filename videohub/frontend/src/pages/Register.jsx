@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { API } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
+import "../styles/auth.css";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -10,6 +11,7 @@ export default function Register() {
   });
 
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,66 +26,87 @@ export default function Register() {
       return;
     }
 
+    setLoading(true);
+    setMessage("");
+
     try {
-      await API.post("/auth/register", form);
+      console.log("Sending registration request with:", { name: form.name, email: form.email });
+      const res = await API.post("/auth/register", form);
+      console.log("Registration response:", res.data);
 
       setMessage("✅ Registered successfully! Redirecting to login...");
 
       setTimeout(() => {
-        navigate("/login");   // ✅ FIX
-      }, 1200);
+        navigate("/login");
+      }, 1500);
     } catch (err) {
-      setMessage(err.response?.data?.message || "❌ Registration failed");
+      console.error("Registration error:", err);
+      console.error("Error response:", err.response?.data);
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || "Registration failed";
+      setMessage(`❌ ${errorMsg}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="centerScreen">
-      <form className="card" onSubmit={handleSubmit}>
-        <h2 className="authTitle">Create Account</h2>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <span className="auth-icon">🎬</span>
+          <h2>Create Account</h2>
+          <p>Join VideoHub to start uploading</p>
+        </div>
 
-        <input
-          className="input"
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <input
+            className="input"
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          className="input"
-          name="email"
-          type="email"
-          placeholder="Email Address"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+          <input
+            className="input"
+            name="email"
+            type="email"
+            placeholder="Email Address"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          className="input"
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+          <input
+            className="input"
+            name="password"
+            type="password"
+            placeholder="Password (min 6 characters)"
+            value={form.password}
+            onChange={handleChange}
+            required
+            minLength={6}
+          />
 
-        <button type="submit" className="btn btnPrimary">
-          Register
-        </button>
+          <button type="submit" className="btn btnPrimary" disabled={loading}>
+            {loading ? "Creating account..." : "Register"}
+          </button>
 
-        {message && <p className="authSwitch">{message}</p>}
+          {message && (
+            <p className="auth-error" style={{ color: message.includes("✅") ? "#4ade80" : "#f87171" }}>
+              {message}
+            </p>
+          )}
+        </form>
 
-        <p className="authSwitch">
+        <p className="auth-switch">
           Already have an account?{" "}
           <Link to="/login" className="btnLink">
             Login
           </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }

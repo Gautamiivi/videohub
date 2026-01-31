@@ -29,7 +29,8 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({ message: "Registered successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Register error:", err);
+    res.status(500).json({ message: "Server error: " + err.message });
   }
 });
 
@@ -52,6 +53,10 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "JWT_SECRET not configured" });
+    }
+
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
@@ -67,7 +72,8 @@ router.post("/login", async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error: " + err.message });
   }
 });
 

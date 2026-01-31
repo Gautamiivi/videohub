@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { API } from "../services/api";
+import "../styles/auth.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const res = await API.post("/auth/login", {
@@ -19,16 +22,16 @@ export default function Login() {
         password,
       });
 
-      // ✅ Save JWT token
+      // Save JWT token and user info
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // ✅ Redirect to home
-      navigate("/");
+      // Redirect to home
+      navigate("/home");
     } catch (err) {
       console.error("LOGIN ERROR:", err);
-
-      alert(
-        err?.response?.data?.message ||
+      setError(
+        err.response?.data?.message ||
         "Login failed. Please check your credentials."
       );
     } finally {
@@ -37,30 +40,47 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page">
-      <h2>Login</h2>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <span className="auth-icon">🎬</span>
+          <h2>Welcome Back</h2>
+          <p>Sign in to your VideoHub account</p>
+        </div>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit} className="auth-form">
+          {error && <div className="auth-error">{error}</div>}
+          
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="input"
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="input"
+          />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+          <button type="submit" className="btn btnPrimary" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          Don't have an account?{" "}
+          <Link to="/register" className="btnLink">
+            Register
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
